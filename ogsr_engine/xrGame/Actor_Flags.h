@@ -15,6 +15,7 @@ enum{
 		AF_ZONES_DBG		=(1<<11),
 		AF_VERTEX_DBG		=(1<<12),
 		AF_CROSSHAIR_DBG	=(1<<13),
+		AF_ZOOM_SOUNDS = (1 << 14),
 };
 
 enum {

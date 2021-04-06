@@ -29,6 +29,11 @@ protected:
 	bool sndReloadPartlyExist{};
 	HUD_SOUND		sndFireModes;
 	HUD_SOUND		sndZoomChange;
+
+	//zoomin and zoomout by bashy
+	HUD_SOUND		sndZoomIn;
+	HUD_SOUND		sndZoomOut;
+	
 	//звук текущего выстрела
 	HUD_SOUND*		m_pSndShotCurrent;
 

@@ -56,6 +56,8 @@ CWeaponMagazined::~CWeaponMagazined()
 	HUD_SOUND::DestroySound(sndReload);
 	HUD_SOUND::DestroySound(sndReloadPartly);
 	HUD_SOUND::DestroySound(sndFireModes);
+	HUD_SOUND::DestroySound(sndZoomIn);
+	HUD_SOUND::DestroySound(sndZoomOut);
 	HUD_SOUND::DestroySound(sndZoomChange);
 	if (m_binoc_vision)
 		xr_delete(m_binoc_vision);
@@ -72,7 +74,8 @@ void CWeaponMagazined::StopHUDSounds		()
 	HUD_SOUND::StopSound(sndReloadPartly);
 	HUD_SOUND::StopSound(sndFireModes);
 	HUD_SOUND::StopSound(sndZoomChange);
-
+	HUD_SOUND::StopSound(sndZoomIn);
+	HUD_SOUND::StopSound(sndZoomOut);
 	HUD_SOUND::StopSound(sndShot);
 	HUD_SOUND::StopSound(sndSilencerShot);
 
@@ -124,6 +127,11 @@ void CWeaponMagazined::Load	(LPCSTR section)
 		HUD_SOUND::LoadSound( section, "snd_fire_modes", sndFireModes, m_eSoundEmptyClick );
 	if ( pSettings->line_exist( section, "snd_zoom_change" ) )
 		HUD_SOUND::LoadSound( section, "snd_zoom_change", sndZoomChange, m_eSoundEmptyClick );
+
+		if (pSettings->line_exist(section, "snd_zoom_in"))
+		HUD_SOUND::LoadSound(section, "snd_zoom_in", sndZoomIn, m_eSoundEmptyClick);
+	if (pSettings->line_exist(section, "snd_zoom_out"))
+		HUD_SOUND::LoadSound(section, "snd_zoom_out", sndZoomOut, m_eSoundEmptyClick);
 	
 	m_pSndShotCurrent = &sndShot;
 		
@@ -554,6 +562,8 @@ void CWeaponMagazined::UpdateSounds	()
 	if (sndEmptyClick.playing	())	sndEmptyClick.set_position	(get_LastFP());
 	if (sndFireModes.playing	())	sndFireModes.set_position	(get_LastFP());
 	if (sndZoomChange.playing	())	sndZoomChange.set_position	(get_LastFP());
+	if (sndZoomIn.playing())	sndZoomIn.set_position(get_LastFP());
+	if (sndZoomOut.playing())	sndZoomOut.set_position(get_LastFP());
 }
 
 void CWeaponMagazined::state_Fire	(float dt)
@@ -1268,6 +1278,9 @@ void CWeaponMagazined::OnZoomIn			()
 
 		if (m_bVision && !m_binoc_vision)
 			m_binoc_vision = xr_new<CBinocularsVision>(this);
+
+		if (psActorFlags.test(AF_ZOOM_SOUNDS))
+			PlaySound(sndZoomIn, get_LastFP());
 	}
 }
 void CWeaponMagazined::OnZoomOut		()
@@ -1288,6 +1301,8 @@ void CWeaponMagazined::OnZoomOut		()
 			VERIFY(m_binoc_vision);
 			xr_delete(m_binoc_vision);
 		}
+		if (psActorFlags.test(AF_ZOOM_SOUNDS))
+			PlaySound(sndZoomOut, get_LastFP());
 	}
 
 }
