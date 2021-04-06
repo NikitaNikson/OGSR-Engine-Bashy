@@ -67,9 +67,7 @@ void CEngineAPI::Initialize()
 	CCC_LoadCFG_custom pTmp("renderer ");
 	pTmp.Execute(Console->ConfigFile);
 
-#ifndef EXCLUDE_R1
 	constexpr LPCSTR r1_name = "xrRender_R1.dll";
-#endif
 	constexpr LPCSTR r2_name = "xrRender_R2.dll";
 	constexpr LPCSTR r3_name = "xrRender_R3.dll";
 	constexpr LPCSTR r4_name = "xrRender_R4.dll";
@@ -83,7 +81,7 @@ void CEngineAPI::Initialize()
 		{
 			// try to load R1
 			Msg("!![%s] Can't load module: [%s]! Error: %s", __FUNCTION__, r4_name, Debug.error2string(GetLastError()));
-			psDeviceFlags.set(rsR2, TRUE);
+	//		psDeviceFlags.set(rsR2, TRUE); Блин боюсь, что будут ошибки
 		}
 		else
 			g_current_renderer = 4;
