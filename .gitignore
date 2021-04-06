@@ -4,7 +4,6 @@
 /3rd_party/_TEMP
 /ogsr_engine/_LIB
 /ogsr_engine/_TEMP
-/bin*
 
 # Precompiled Headers
 *.ipch
