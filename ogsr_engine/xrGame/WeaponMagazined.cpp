@@ -805,11 +805,13 @@ void CWeaponMagazined::switch2_Empty()
 void CWeaponMagazined::PlayReloadSound()
 {
 	if (IsPartlyReloading() && sndReloadPartlyExist)
-		PlaySound(sndReloadPartly, get_LastFP());
+	PlaySound(sndReloadPartly, get_LastFP());
+	else if (!IsJammedReloading() & !IsPartlyReloading())
+	PlaySound(sndReload, get_LastFP());
 	else if (!IsJammedReloading() && IsPartlyReloading())
-		PlaySound(sndReloadPartly, get_LastFP());
+	PlaySound(sndReloadPartly, get_LastFP());
 	else
-		PlaySound(sndReloadJammed, get_LastFP());
+	PlaySound(sndReloadJammed, get_LastFP());
 }
 
 void CWeaponMagazined::switch2_Reload()
