@@ -1325,6 +1325,10 @@ BOOL CWeapon::CheckForMisfire	()
 	float mp = GetConditionMisfireProbability();
 	if(rnd < mp)
 	{
+		if (unlimited_ammo())
+		{ //--> Отключаем осечки если у нас бесконечные патроны через консоль
+			return FALSE;
+		}
 		FireEnd();
 
 		bMisfire = true;
