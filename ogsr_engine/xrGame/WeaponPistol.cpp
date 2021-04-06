@@ -156,8 +156,9 @@ void CWeaponPistol::PlayAnimShoot	()
 	else 
 	{
 		CWeaponPistol::WWPMotions& m = wwpm_current();
-		m_pHUD->animPlay	(random_anim(m.mhud_shot_l), FALSE, this, GetState()); 
+		m_pHUD->animPlay	(random_anim(m.mhud_shot_l), TRUE, this, GetState()); 
 		m_opened = true; 
+		m_bPending = true;
 	}
 }
 
