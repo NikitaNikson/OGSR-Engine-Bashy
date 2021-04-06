@@ -151,9 +151,15 @@ protected:
 	//партиклы гильз
 	virtual void			OnShellDrop			(const Fvector& play_pos,
 												 const Fvector& parent_vel);
+												 
+	//партиклы пули
+	virtual void			OnBulletDrop(const Fvector& play_pos,
+										 const Fvector& parent_vel);
 protected:
 	//имя пратиклов для гильз
 	shared_str				m_sShellParticles;
+	//имя пратиклов для пуль
+	shared_str				m_sShellParticlesJammed;
 public:
 	Fvector					vLoadedShellPoint;
 	float					m_fPredBulletTime;

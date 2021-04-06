@@ -27,6 +27,7 @@ protected:
 	HUD_SOUND		sndEmptyClick;
 	HUD_SOUND		sndReload, sndReloadPartly;
 	bool sndReloadPartlyExist{};
+	HUD_SOUND		sndReloadJammed;
 	HUD_SOUND		sndFireModes;
 	HUD_SOUND		sndZoomChange;
 
@@ -49,6 +50,7 @@ protected:
 	ESoundTypes		m_eSoundShot;
 	ESoundTypes		m_eSoundEmptyClick;
 	ESoundTypes		m_eSoundReload;
+	ESoundTypes		m_eSoundReloadJammed;
 	struct SWMmotions{
 		MotionSVec		mhud_idle;
 		MotionSVec		mhud_idle_aim;
@@ -59,6 +61,7 @@ protected:
 		MotionSVec		mhud_idle_sprint;
 		MotionSVec		mhud_idle_moving;
 		MotionSVec		mhud_reload_partly;
+		MotionSVec		mhud_reload_jammed;
 	};
 	SWMmotions			mhud;	
 	
@@ -90,6 +93,7 @@ protected:
 
 protected:
 	virtual void	ReloadMagazine	();
+	virtual void	ReloadJammed	();
 			void	ApplySilencerKoeffs	();
 
 	virtual void	state_Fire		(float dt);

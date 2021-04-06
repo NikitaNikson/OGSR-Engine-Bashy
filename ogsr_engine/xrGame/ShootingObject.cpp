@@ -249,6 +249,11 @@ void CShootingObject::LoadShellParticles (LPCSTR section, LPCSTR prefix)
 		m_sShellParticles	= pSettings->r_string	(section,full_name);
 		vLoadedShellPoint	= pSettings->r_fvector3	(section,strconcat(sizeof(full_name),full_name, prefix, "shell_point"));
 	}
+	strconcat(sizeof(full_name), full_name, prefix, "shell_particles_jammed");
+	if (pSettings->line_exist(section, full_name))
+	{
+		m_sShellParticlesJammed = pSettings->r_string(section, full_name);
+	}
 }
 
 void CShootingObject::LoadFlameParticles (LPCSTR section, LPCSTR prefix)
@@ -303,6 +308,29 @@ void CShootingObject::OnShellDrop	(const Fvector& play_pos,
 	pShellParticles->Play				();
 }
 
+void CShootingObject::OnBulletDrop(const Fvector& play_pos,
+	const Fvector& parent_vel)
+{
+	if (ParentIsActor()) {
+		auto wpn = smart_cast<CGameObject*>(this);
+		if (wpn)
+			Actor()->callback(GameObject::eOnWpnShellDrop)(wpn->lua_game_object(), play_pos, parent_vel);
+	}
+	else if (Core.Features.test(xrCore::Feature::npc_simplified_shooting))
+		return;
+
+	if (!m_sShellParticlesJammed) return;
+	if (Device.vCameraPosition.distance_to_sqr(play_pos) > 2 * 2) return;
+
+	CParticlesObject* pShellParticles = CParticlesObject::Create(*m_sShellParticlesJammed, TRUE);
+
+	Fmatrix particles_pos;
+	particles_pos.set(get_ParticlesXFORM());
+	particles_pos.c.set(play_pos);
+
+	pShellParticles->UpdateParent(particles_pos, parent_vel);
+	pShellParticles->Play();
+}
 
 //партиклы дыма
 void CShootingObject::StartSmokeParticles	(const Fvector& play_pos,

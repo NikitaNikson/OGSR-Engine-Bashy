@@ -578,4 +578,5 @@ public:
 
 	virtual void OnBulletHit();
 	bool IsPartlyReloading();
+	bool CWeapon::IsJammedReloading();
 };
