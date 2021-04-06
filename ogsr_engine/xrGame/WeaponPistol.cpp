@@ -9,6 +9,7 @@ CWeaponPistol::CWeaponPistol(LPCSTR name) : CWeaponCustomPistol(name)
 	m_eSoundClose		= ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING /*| eSoundType*/);
 	m_opened = false;
 	m_bPending = false;
+	m_bCloseAnim = false;
 }
 
 CWeaponPistol::~CWeaponPistol(void)
@@ -62,6 +63,9 @@ void CWeaponPistol::Load	(LPCSTR section)
 	animGetEx( wm_mhud_r.mhud_show,             "anim_draw", "_r" );
 	animGetEx( wm_mhud_r.mhud_hide,             "anim_holster", "_r" ); // not used ???
 	animGetEx( wm_mhud_r.mhud_shots,            "anim_shoot", "_r" );
+
+	if (pSettings->line_exist(*hud_sect, "full_close_anim"))
+		m_bCloseAnim = !!pSettings->r_bool(*hud_sect, "full_close_anim");
 
 	if(IsZoomEnabled()){
 		animGetEx( wm_mhud_r.mhud_idle_aim, "anim_idle_aim", "_r" );
@@ -192,8 +196,13 @@ void CWeaponPistol::OnAnimationEnd(u32 state)
 {
 	if(state == eHiding && m_opened) 
 	{
-		m_opened = false;
-//		switch2_Hiding();
+		if (m_bCloseAnim) {
+			m_opened = false;
+			inherited::switch2_HidingClose();
+			return;
+		}
+		else
+			m_opened = false;
 	} 
 	inherited::OnAnimationEnd(state);
 }
