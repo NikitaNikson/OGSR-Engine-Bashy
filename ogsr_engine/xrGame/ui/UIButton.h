@@ -67,6 +67,8 @@ public:
 	Fvector2			GetPushOffset			()							{return m_PushOffset;}
 	void				SetShadowOffset			(const Fvector2& offset) { m_ShadowOffset = offset; }
 	shared_str			m_hint_text;
+	virtual void		SetFontToHighlight			(CGameFont *pFnt)			{m_font_to_highlight = pFnt; }	
+	virtual void		SetFontAfterHighlight		(CGameFont *pFnt)			{m_font_after_highlight = pFnt; }	
 protected:
 	
 	E_BUTTON_STATE		m_eButtonState;
@@ -76,6 +78,9 @@ protected:
 	Fvector2			m_PushOffset;
 	int					m_uAccelerator[2];
 	Fvector2			m_ShadowOffset;
+
+	CGameFont* 			m_font_to_highlight;
+	CGameFont* 			m_font_after_highlight;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
