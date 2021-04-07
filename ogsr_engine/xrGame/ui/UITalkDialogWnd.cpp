@@ -82,6 +82,7 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
 	AttachChild					(&UIToTradeButton);
 	CUIXmlInit::Init3tButton	(*m_uiXml, "button", 0, &UIToTradeButton);
 	UIToTradeButton.SetWindowName("trade_btn");
+	UIToTradeButton.EnableTextHighlighting(false);
 
 	//Элементы автоматического добавления
 	CUIXmlInit::InitAutoStatic	(*m_uiXml, "auto_static", this);
@@ -243,6 +244,7 @@ CUIQuestionItem::CUIQuestionItem			(CUIXml* xml_doc, LPCSTR path)
 
 	Register						(m_text);
 	m_text->SetWindowName			("text_button");
+	m_text->EnableTextHighlighting(true);
 	AddCallback("text_button", BUTTON_CLICKED, fastdelegate::MakeDelegate(this, &CUIQuestionItem::OnTextClicked));
 
 	if (Core.Features.test(xrCore::Feature::show_dialog_numbers)) {

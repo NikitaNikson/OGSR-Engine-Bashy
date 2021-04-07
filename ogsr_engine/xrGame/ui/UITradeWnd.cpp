@@ -176,6 +176,8 @@ void CUITradeWnd::Init()
 	AttachChild							(&m_uidata->UIToTalkButton);
 	xml_init.Init3tButton				(uiXml, "button", 1, &m_uidata->UIToTalkButton);
 
+	m_uidata->UIPerformTradeButton.EnableTextHighlighting(false);
+
 	m_pUIPropertiesBox					= xr_new<CUIPropertiesBox>(); m_pUIPropertiesBox->SetAutoDelete(true);
 	AttachChild(m_pUIPropertiesBox);
 	m_pUIPropertiesBox->Init(0, 0, 300, 300);

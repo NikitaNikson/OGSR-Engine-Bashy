@@ -213,22 +213,20 @@ void CUIButton::DrawHighlightedText(){
 
 void CUIButton::DrawText()
 {
-	float right_offset;
-	float down_offset;
-
 	if (m_pLines)
 	{
 		m_pLines->SetWndSize(m_wndSize);
 
-		if(IsHighlightText() && xr_strlen(m_pLines->GetText())>0 && m_bEnableTextHighlighting)
-			DrawHighlightedText();				
-		else{
+		if (IsHighlightText() && xr_strlen(m_pLines->GetText()) > 0 && m_bEnableTextHighlighting)
+			DrawHighlightedText();
+		else {
 			Fvector2			p;
-			GetAbsolutePos		(p);
-			m_pLines->Draw		(p.x + m_TextOffset.x, p.y + m_TextOffset.y);
+			GetAbsolutePos(p);
+			m_pLines->Draw(p.x + m_TextOffset.x, p.y + m_TextOffset.y);
 		}
-}
-	if(g_btnHint->Owner()==this)
+	}
+
+	if (g_btnHint->Owner() == this)
 		g_btnHint->Draw_();
 }
 
