@@ -1298,6 +1298,7 @@
     <ClInclude Include="WeaponBinoculars.h" />
     <ClInclude Include="WeaponBinocularsVision.h" />
     <ClInclude Include="WeaponShotgun.h" />
+    <ClInclude Include="WeaponAutomaticShotgun.h" />
     <ClInclude Include="WeaponFORT.h" />
     <ClInclude Include="WeaponRG6.h" />
     <ClInclude Include="weaponBM16.h" />
@@ -2234,6 +2235,7 @@
     <ClCompile Include="WeaponBinoculars_script.cpp" />
     <ClCompile Include="WeaponBinocularsVision.cpp" />
     <ClCompile Include="WeaponShotgun.cpp" />
+    <ClCompile Include="WeaponAutomaticShotgun.cpp" />
     <ClCompile Include="weaponshotgun_script.cpp" />
     <ClCompile Include="WeaponFORT.cpp" />
     <ClCompile Include="WeaponRG6.cpp" />

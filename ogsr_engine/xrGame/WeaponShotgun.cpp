@@ -312,12 +312,24 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
 
 void CWeaponShotgun::Reload() 
 {
-	OnZoomOut();
-	if(m_bTriStateReload){
-		m_stop_triStateReload = false;
-		TriStateReload();
-	}else
-		TryReload();
+		if (IsJammedReloading())
+			PlayAnimJammedReload();
+		else {
+			if (m_bTriStateReload) {
+				m_stop_triStateReload = false;
+				OnZoomOut();
+				TriStateReload();
+			}
+			else
+				inherited::Reload();
+		}
+	}
+
+void CWeaponShotgun::PlayAnimJammedReload()
+{
+	VERIFY(GetState() == eReload);
+	m_pHUD->animPlay(random_anim(mhud.mhud_reload_jammed), TRUE, this, GetState());
+	if (IsMisfire())	bMisfire = false;
 }
 
 void CWeaponShotgun::TriStateReload()

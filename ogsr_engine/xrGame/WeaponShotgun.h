@@ -32,6 +32,7 @@ public:
 	virtual void	UpdateSounds		();
 	virtual void	PlayAnimOpenWeapon	();
 	virtual void	PlayAnimAddOneCartridgeWeapon();
+	virtual void	PlayAnimJammedReload();
 	void			PlayAnimCloseWeapon	();
 
 	virtual	void	UpdateCL();

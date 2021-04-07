@@ -6109,6 +6109,12 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="WeaponAutomaticShotgun.h">
+      <Filter>Core\Client\Objects\items &amp; weapons\Weapons\Various weapons\Weapon Shotgun</Filter>
+    </ClInclude>
+    <ClCompile Include="WeaponAutomaticShotgun.cpp">
+      <Filter>Core\Client\Objects\items &amp; weapons\Weapons\Various weapons\Weapon Shotgun</Filter>
+    </ClCompile>
     <ClCompile Include="damage_manager.cpp">
       <Filter>AI\AComponents\DamageManager</Filter>
     </ClCompile>
