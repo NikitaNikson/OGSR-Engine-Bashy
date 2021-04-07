@@ -120,10 +120,10 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	HUD_SOUND::LoadSound(section,"snd_empty"	, sndEmptyClick	, m_eSoundEmptyClick	);
 	HUD_SOUND::LoadSound(section,"snd_reload"	, sndReload		, m_eSoundReload		);
 
-
-	if (pSettings->line_exist(section, "snd_reload_partly"))
+	if (pSettings->line_exist(section, "snd_reload_partly")) {
 		HUD_SOUND::LoadSound(section, "snd_reload_partly", sndReloadPartly, m_eSoundReload);
-	else HUD_SOUND::LoadSound(section, "snd_reload", sndReloadPartly, m_eSoundReload);
+		sndReloadPartlyExist = true;
+	}
 	
 	if ( pSettings->line_exist( section, "snd_fire_modes" ) )
 		HUD_SOUND::LoadSound( section, "snd_fire_modes", sndFireModes, m_eSoundEmptyClick );
@@ -137,7 +137,6 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 	if (pSettings->line_exist(section, "snd_reload_jammed"))
 		HUD_SOUND::LoadSound(section, "snd_reload_jammed", sndReloadJammed, m_eSoundReloadJammed);
-	else HUD_SOUND::LoadSound(section, "snd_reload", sndReloadJammed, m_eSoundReloadJammed);
 	
 	m_pSndShotCurrent = &sndShot;
 		
