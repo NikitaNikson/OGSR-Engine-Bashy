@@ -136,6 +136,38 @@ public:
 	}
 };
 
+class CCC_Spawn : public IConsole_Command {
+public:
+	CCC_Spawn(LPCSTR N) : IConsole_Command(N) { };
+	virtual void Execute(LPCSTR args) {
+		if (!g_pGameLevel) return;
+
+#ifndef	DEBUG
+		if (GameID() != GAME_SINGLE)
+		{
+			Msg("For this game type entity-spawning is disabled.");
+			return;
+		};
+#endif
+
+		if (!pSettings->section_exist(args))
+		{
+			Msg("! Section [%s] isn`t exist...", args);
+			return;
+		}
+
+		char	Name[128];	Name[0] = 0;
+		sscanf(args, "%s", Name);
+		Fvector pos = Actor()->Position();
+		pos.y += 3.0f;
+		Level().g_cl_Spawn(Name, 0xff, M_SPAWN_OBJECT_LOCAL, pos);
+	}
+	virtual void	Info(TInfo& I)
+	{
+		strcpy(I, "name,team,squad,group");
+	}
+};
+
 // console commands
 class CCC_GameDifficulty : public CCC_Token {
 public:
@@ -1285,6 +1317,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,			"g_ammunition_on_belt",	&psActorFlags,	AF_AMMO_ON_BELT);
 	CMD3(CCC_Mask,			"g_3d_scopes",			&psActorFlags,	AF_3D_SCOPES);
 	CMD3(CCC_Mask,			"g_crosshair_dbg",		&psActorFlags,	AF_CROSSHAIR_DBG);
+	CMD1(CCC_Spawn, "g_spawn");
 	CMD1(CCC_TimeFactor,	"time_factor")	
 	CMD1(CCC_SetWeather, "set_weather");
 //#endif // MASTER_GOLD
