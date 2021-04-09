@@ -6,7 +6,9 @@
 class CActor;
 class CUICustomMap;
 //////////////////////////////////////////////////////////////////////////
-
+const float pUpdateZoomFactorByClick = 0.2;
+const float pMaxZoomFactor = 2.0;
+const float pMinZoomFactor = 0.4;
 
 class CUIZoneMap
 {
@@ -18,6 +20,8 @@ class CUIZoneMap
 	CUIStatic					m_compass;
 	CUIStatic					m_clipFrame;
 	CUIStatic					m_pointerDistanceText;
+	CUIStatic					m_zoomText;
+	float						m_fZoomFactor;
 
 public:
 								CUIZoneMap		();
@@ -39,6 +43,18 @@ public:
 	CUIStatic&					ClipFrame		()									{return m_clipFrame; }; // alpet: для экспорта в скрипты
 	CUIStatic&					Compass			()									{return m_compass; }; // alpet: для экспорта в скрипты
 
-	void						SetupCurrentMap	();
+	void						SetupCurrentMap();
+
+	void						SetZoomFactor(float value);
+	float						GetZoomFactor() const {
+		return m_fZoomFactor;
+	}
+
+	void						IncZoom() {
+		SetZoomFactor(GetZoomFactor() + pUpdateZoomFactorByClick);
+	}
+	void						DecZoom() {
+		SetZoomFactor(GetZoomFactor() - pUpdateZoomFactorByClick);
+	}
 };
 

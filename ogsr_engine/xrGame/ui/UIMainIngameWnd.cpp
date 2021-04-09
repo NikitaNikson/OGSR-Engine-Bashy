@@ -880,39 +880,39 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 		}
 #endif		
 
-	if(Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT))
-	{
-		switch(dik)
+		if (Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT))
 		{
-		case DIK_NUMPADMINUS:
-			UIZoneMap->ZoomOut();
-			return true;
-			break;
-		case DIK_NUMPADPLUS:
-			UIZoneMap->ZoomIn();
-			return true;
-			break;
+			switch (dik)
+			{
+			case DIK_NUMPADMINUS:
+				//.HideAll();
+				HUD().GetUI()->HideGameIndicators();
+				psHUD_Flags.set(HUD_DRAW, FALSE);
+				return true;
+				break;
+			case DIK_NUMPADPLUS:
+				//.ShowAll();
+				HUD().GetUI()->ShowGameIndicators();
+				psHUD_Flags.set(HUD_DRAW, TRUE);
+				return true;
+				break;
+			}
 		}
-	}
-	else
-	{
-		switch(dik)
+		else
 		{
-		case DIK_NUMPADMINUS:
-			//.HideAll();
-			HUD().GetUI()->HideGameIndicators();
-			return true;
-			break;
-		case DIK_NUMPADPLUS:
-			//.ShowAll();
-			HUD().GetUI()->ShowGameIndicators();
-			return true;
-			break;
+			switch (dik)
+			{
+			case DIK_NUMPADMINUS:
+				UIZoneMap->DecZoom();
+				break;
+			case DIK_NUMPADPLUS:
+				UIZoneMap->IncZoom();
+				break;
+			}
 		}
-	}
 
-	return false;
-}
+		return false;
+	}
 
 
 void CUIMainIngameWnd::RenderQuickInfos()
