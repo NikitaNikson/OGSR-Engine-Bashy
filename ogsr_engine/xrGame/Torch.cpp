@@ -67,6 +67,7 @@ CTorch::~CTorch(void)
 	light_render.destroy	();
 	light_omni.destroy	();
 	glow_render.destroy		();
+	HUD_SOUND::DestroySound(m_FlashlightSwitchSnd);
 	HUD_SOUND::DestroySound	(m_NightVisionOnSnd);
 	HUD_SOUND::DestroySound	(m_NightVisionOffSnd);
 	HUD_SOUND::DestroySound	(m_NightVisionIdleSnd);
@@ -89,6 +90,7 @@ void CTorch::Load(LPCSTR section)
 {
 	inherited::Load			(section);
 	light_trace_bone		= pSettings->r_string(section,"light_trace_bone");
+	HUD_SOUND::LoadSound(section, "snd_flashlight_switch_on", m_FlashlightSwitchSnd, SOUND_TYPE_ITEM_USING);
 
 
 	m_bNightVisionEnabled = !!pSettings->r_bool(section,"night_vision");
@@ -211,6 +213,8 @@ void CTorch::Switch	(bool light_on)
 		pVisual->LL_SetBoneVisible			(bi,	light_on,	TRUE);
 		pVisual->CalculateBones				(TRUE);
 	}
+	if (m_switched_on)
+		HUD_SOUND::PlaySound(m_FlashlightSwitchSnd, Actor()->Position(), NULL, true, false);
 }
 
 BOOL CTorch::net_Spawn(CSE_Abstract* DC) 

@@ -63,6 +63,7 @@ protected:
 	HUD_SOUND				m_NightVisionOffSnd;
 	HUD_SOUND				m_NightVisionIdleSnd;
 	HUD_SOUND				m_NightVisionBrokenSnd;
+	HUD_SOUND				m_FlashlightSwitchSnd;
 
 	enum EStats{
 		eTorchActive				= (1<<0),
