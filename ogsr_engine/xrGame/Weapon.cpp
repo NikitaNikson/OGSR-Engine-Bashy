@@ -113,92 +113,90 @@ void CWeapon::Hit					(SHit* pHDS)
 
 
 
-void CWeapon::UpdateXForm	()
+void CWeapon::UpdateXForm()
 {
-	if (Device.dwFrame!=dwXF_Frame)
+	if (Device.dwFrame == dwXF_Frame)
+		return;
+
+	dwXF_Frame = Device.dwFrame;
+
+	if (!H_Parent())
+		return;
+
+	// Get access to entity and its visual
+	CEntityAlive*	E = smart_cast<CEntityAlive*>(H_Parent());
+
+	if (!E) return;
+
+	const CInventoryOwner	*parent = smart_cast<const CInventoryOwner*>(E);
+	if (!parent || (parent && parent->use_simplified_visual()))
+		return;
+
+	if (!m_can_be_strapped_rifle)
 	{
-		dwXF_Frame = Device.dwFrame;
-
-		if (0==H_Parent())	return;
-
-		// Get access to entity and its visual
-		CEntityAlive*	E		= smart_cast<CEntityAlive*>(H_Parent());
-		
-		if(!E) 
+		if (parent->attached(this))
 			return;
-
-		const CInventoryOwner	*parent = smart_cast<const CInventoryOwner*>(E);
-		if (parent && parent->use_simplified_visual())
-			return;
-
-		if (!m_can_be_strapped_rifle)
-		{
-			if (parent->attached(this))
-				return;
-		}
-
-		R_ASSERT		(E);
-		IKinematics*	V		= smart_cast<IKinematics*>	(E->Visual());
-		VERIFY			(V);
-
-		// Get matrices
-		int						boneL = -1, boneR = -1, boneR2 = -1;
-		if ((m_strap_bone0_id == -1 || m_strap_bone1_id == -1) && m_can_be_strapped_rifle)
-		{
-			m_strap_bone0_id = V->LL_BoneID(m_strap_bone0);
-			m_strap_bone1_id = V->LL_BoneID(m_strap_bone1);
-		}
-
-		if (parent->inventory().GetActiveSlot() != SECOND_WEAPON_SLOT && m_can_be_strapped_rifle && parent->inventory().InSlot(this))
-		{
-			boneR = m_strap_bone0_id;
-			boneR2 = m_strap_bone1_id;
-			boneL = boneR;
-
-			if (!m_strapped_mode_rifle) m_strapped_mode_rifle = true;
-		}
-		else {
-			E->g_WeaponBones(boneL, boneR, boneR2);
-
-			if (m_strapped_mode_rifle) m_strapped_mode_rifle = false;
-		}
-
-		if (boneR == -1) 		return;
-
-		if ((HandDependence() == hd1Hand) || (GetState() == eReload) || (!E->g_Alive()))
-			boneL = boneR2;
-#pragma todo("TO ALL: serious performance problem")
-		// от mortan:
-		// https://www.gameru.net/forum/index.php?s=&showtopic=23443&view=findpost&p=1677678
-		V->CalculateBones_Invalidate();
-		V->CalculateBones( true ); //V->CalculateBones	();
-		Fmatrix& mL			= V->LL_GetTransform(u16(boneL));
-		Fmatrix& mR			= V->LL_GetTransform(u16(boneR));
-		// Calculate
-		Fmatrix				mRes;
-		Fvector				R,D,N;
-		D.sub				(mL.c,mR.c);	
-
-		if(fis_zero(D.magnitude()))
-		{
-			mRes.set(E->XFORM());
-			mRes.c.set(mR.c);
-		}
-		else
-		{		
-			D.normalize();
-			R.crossproduct	(mR.j,D);
-
-			N.crossproduct	(D,R);			
-			N.normalize();
-
-			mRes.set		(R,N,D,mR.c);
-			mRes.mulA_43	(E->XFORM());
-		}
-
-		UpdatePosition	(mRes);
 	}
+
+	IKinematics*	V = smart_cast<IKinematics*>	(E->Visual());
+	VERIFY(V);
+
+	// Get matrices
+	int						boneL = -1, boneR = -1, boneR2 = -1;
+
+	if ((m_strap_bone0_id == -1 || m_strap_bone1_id == -1) && m_can_be_strapped_rifle)
+	{
+		m_strap_bone0_id = V->LL_BoneID(m_strap_bone0);
+		m_strap_bone1_id = V->LL_BoneID(m_strap_bone1);
+	}
+
+	if (parent->inventory().GetActiveSlot() != SECOND_WEAPON_SLOT && m_can_be_strapped_rifle && parent->inventory().InSlot(this))
+	{
+		boneR = m_strap_bone0_id;
+		boneR2 = m_strap_bone1_id;
+		boneL = boneR;
+
+		if (!m_strapped_mode_rifle) m_strapped_mode_rifle = true;
+	}
+	else {
+		E->g_WeaponBones(boneL, boneR, boneR2);
+
+		if (m_strapped_mode_rifle) m_strapped_mode_rifle = false;
+	}
+
+	if (boneR == -1) 		return;
+
+	if ((HandDependence() == hd1Hand) || (GetState() == eReload) || (!E->g_Alive()))
+		boneL = boneR2;
+
+	if (boneL == -1) 		return;
+
+	V->CalculateBones(true);
+	Fmatrix& mL = V->LL_GetTransform(u16(boneL));
+	Fmatrix& mR = V->LL_GetTransform(u16(boneR));
+	// Calculate
+	Fmatrix				mRes;
+	Fvector				R, D, N;
+	D.sub(mL.c, mR.c);
+
+	if (fis_zero(D.magnitude())) {
+		mRes.set(E->XFORM());
+		mRes.c.set(mR.c);
+	}
+	else {
+		D.normalize();
+		R.crossproduct(mR.j, D);
+
+		N.crossproduct(D, R);
+		N.normalize();
+
+		mRes.set(R, N, D, mR.c);
+		mRes.mulA_43(E->XFORM());
+	}
+
+	UpdatePosition(mRes);
 }
+
 
 void CWeapon::UpdateFireDependencies_internal()
 {

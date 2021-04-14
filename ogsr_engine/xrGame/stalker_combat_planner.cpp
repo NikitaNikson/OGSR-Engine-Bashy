@@ -33,6 +33,8 @@
 #include "stalker_planner.h"
 #include "stalker_kill_wounded_planner.h"
 #include "stalker_movement_manager.h"
+#include "weaponmagazined.h"
+#include "inventory.h"
 
 using namespace StalkerSpace;
 using namespace StalkerDecisionSpace;
@@ -149,20 +151,26 @@ void CStalkerCombatPlanner::initialize			()
 	object().agent_manager().member().register_in_combat	(m_object);
 }
 
-void CStalkerCombatPlanner::finalize			()
+void CStalkerCombatPlanner::finalize()
 {
-	inherited::finalize		();
+	inherited::finalize();
 
 	if (!object().g_Alive())
 		return;
 
-	object().memory().danger().time_line					(Device.dwTimeGlobal + 3000);
+	object().memory().danger().time_line(Device.dwTimeGlobal + 3000);
 	if (object().agent_manager().member().registered_in_combat(m_object))
-		object().agent_manager().member().unregister_in_combat	(m_object);
+		object().agent_manager().member().unregister_in_combat(m_object);
 
-	object().m_clutched_hammer_enabled						= false;
+	object().m_clutched_hammer_enabled = false;
 
-//	object().sound().remove_active_sounds					(eStalkerSoundMaskNoDanger);
+	//	object().sound().remove_active_sounds					(eStalkerSoundMaskNoDanger);
+
+	if (object().inventory().ItemFromSlot(SECOND_WEAPON_SLOT)) {
+		CWeaponMagazined				*temp = smart_cast<CWeaponMagazined*>(object().inventory().ItemFromSlot(SECOND_WEAPON_SLOT));
+		if (object().inventory().ActiveItem() && temp && (object().inventory().ActiveItem()->object().ID() == temp->ID()))
+			object().set_goal(eObjectActionIdle, object().inventory().ItemFromSlot(SECOND_WEAPON_SLOT));
+	}
 }
 
 void CStalkerCombatPlanner::add_evaluators		()

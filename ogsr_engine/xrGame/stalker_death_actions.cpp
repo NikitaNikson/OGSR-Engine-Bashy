@@ -26,16 +26,16 @@ using namespace StalkerDecisionSpace;
 // CStalkerActionDead
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDead::CStalkerActionDead	(CAI_Stalker *object, LPCSTR action_name) :
-	inherited							(object,action_name)
+CStalkerActionDead::CStalkerActionDead(CAI_Stalker *object, LPCSTR action_name) :
+	inherited(object, action_name)
 {
 }
 
-bool CStalkerActionDead::fire			() const
+bool CStalkerActionDead::fire() const
 {
 	if (object().inventory().TotalWeight() <= 0)
 		return							(false);
-	
+
 	CWeapon								*weapon = smart_cast<CWeapon*>(object().inventory().ActiveItem());
 	if (!weapon)
 		return							(false);
@@ -52,9 +52,9 @@ bool CStalkerActionDead::fire			() const
 	return								(true);
 }
 
-void CStalkerActionDead::initialize		()
+void CStalkerActionDead::initialize()
 {
-	inherited::initialize				();
+	inherited::initialize();
 
 	if (object().getDestroy())
 		return;
@@ -62,23 +62,23 @@ void CStalkerActionDead::initialize		()
 	if (!fire())
 		return;
 
-	object().inventory().Action			(kWPN_FIRE,CMD_START);
+	object().inventory().Action(kWPN_FIRE, CMD_START);
 
-	u16 active_slot						= object().inventory().GetActiveSlot();
+	u16 active_slot = object().inventory().GetActiveSlot();
 	if (active_slot == SECOND_WEAPON_SLOT) {
 		CInventoryItem*					item = object().inventory().ItemFromSlot(active_slot);
 		if (item) {
 			CWeaponMagazined*			weapon = smart_cast<CWeaponMagazined*>(item);
-			VERIFY						(weapon);
-			weapon->SetQueueSize		(weapon->GetAmmoElapsed());
+			VERIFY(weapon);
+			weapon->SetQueueSize(weapon->GetAmmoElapsed());
 		}
 	}
-		
+
 	typedef xr_vector<CInventorySlot>	SLOTS;
 
 	SLOTS::iterator						I = object().inventory().m_slots.begin(), B = I;
 	SLOTS::iterator						E = object().inventory().m_slots.end();
-	for ( ; I != E; ++I) {
+	for (; I != E; ++I) {
 		if ((I - B) == (int)object().inventory().GetActiveSlot())
 			continue;
 
@@ -88,13 +88,16 @@ void CStalkerActionDead::initialize		()
 		if ((*I).m_pIItem->object().CLS_ID == CLSID_IITEM_BOLT)
 			continue;
 
-		object().inventory().Ruck		((*I).m_pIItem);
+		object().inventory().Ruck((*I).m_pIItem);
 	}
 }
 
 void CStalkerActionDead::execute()
 {
 	inherited::execute();
+
+	if (object().getDestroy())
+		return;
 
 	object().movement().enable_movement(false);
 
@@ -112,24 +115,9 @@ void CStalkerActionDead::execute()
 		if ((*I).m_pIItem->object().CLS_ID == CLSID_IITEM_BOLT)
 			continue;
 
-		if ((*I).m_pIItem->GetSlot() == TORCH_SLOT)
+		if ((I - B) == (int)object().inventory().GetActiveSlot()) {
+			(*I).m_pIItem->SetDropManual(TRUE);
 			continue;
-
-		if ((*I).m_pIItem->GetSlot() == SECOND_WEAPON_SLOT && object().inventory().GetActiveSlot() != SECOND_WEAPON_SLOT)
-			continue;
-
-		if ((I - B) == (int)object().inventory().GetActiveSlot())
-		{
-			CWeapon	*weapon = smart_cast<CWeapon*>(object().inventory().ActiveItem());
-			if (weapon)
-			{
-				if (weapon->strapped_mode())
-					continue;
-				else {
-					(*I).m_pIItem->SetDropManual(TRUE);
-					continue;
-				}
-			}
 		}
 
 		object().inventory().Ruck((*I).m_pIItem);

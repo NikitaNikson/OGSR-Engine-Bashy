@@ -18,7 +18,6 @@
 #include "game_base_space.h"
 #include "clsid_game.h"
 #include "CustomOutfit.h"
-
 #include "UIGameSP.h"
 #include "HudManager.h"
 #include "ui/UIInventoryWnd.h"
@@ -136,24 +135,24 @@ void CInventory::Clear()
 
 void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placement)
 {
-	CInventoryItem *pIItem				= smart_cast<CInventoryItem*>(pObj);
-	VERIFY								(pIItem);
-	
-	if(pIItem->m_pCurrentInventory)
+	CInventoryItem *pIItem = smart_cast<CInventoryItem*>(pObj);
+	VERIFY(pIItem);
+
+	if (pIItem->m_pCurrentInventory)
 	{
 		Msg("! ERROR CInventory::Take but object has m_pCurrentInventory");
 		Msg("! Inventory Owner is [%d]", GetOwner()->object_id());
 		Msg("! Object Inventory Owner is [%d]", pIItem->m_pCurrentInventory->GetOwner()->object_id());
 
-		CObject* p	= pObj->H_Parent();
-		if(p)
+		CObject* p = pObj->H_Parent();
+		if (p)
 			Msg("! object parent is [%s] [%d]", p->cName().c_str(), p->ID());
 	}
 
-	R_ASSERT							(CanTakeItem(pIItem));
-	
-	pIItem->m_pCurrentInventory			= this;
-	pIItem->SetDropManual				(FALSE);
+	R_ASSERT(CanTakeItem(pIItem));
+
+	pIItem->m_pCurrentInventory = this;
+	pIItem->SetDropManual(FALSE);
 
 	if (Level().CurrentEntity())
 	{
@@ -172,70 +171,64 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 		}
 	}
 
-	m_all.push_back						(pIItem);
+	m_all.push_back(pIItem);
 
-	if(!strict_placement)
-		pIItem->m_eItemPlace			= eItemPlaceUndefined;
+	if (!strict_placement)
+		pIItem->m_eItemPlace = eItemPlaceUndefined;
 
-	bool result							= false;
-	switch(pIItem->m_eItemPlace)
+	bool result = false;
+	switch (pIItem->m_eItemPlace)
 	{
 	case eItemPlaceBelt:
-		result							= Belt(pIItem); 
-		if (!result) {
-			Msg("!![%s] cant put in belt item [%s], moving to ruck...", __FUNCTION__, pIItem->object().cName().c_str());
-			pIItem->m_eItemPlace = eItemPlaceRuck;
-			R_ASSERT(Ruck(pIItem));
-		}
+		result = Belt(pIItem);
+#ifdef DEBUG
+		if (!result)
+			Msg("cant put in belt item %s", *pIItem->object().cName());
+#endif
 
 		break;
 	case eItemPlaceRuck:
-		result							= Ruck(pIItem);
+		result = Ruck(pIItem);
 #ifdef DEBUG
-		if(!result) 
+		if (!result)
 			Msg("cant put in ruck item %s", *pIItem->object().cName());
 #endif
 
 		break;
 	case eItemPlaceSlot:
-		if ( smart_cast<CActor*>( m_pOwner ) && Device.dwPrecacheFrame && m_iActiveSlot == NO_ACTIVE_SLOT && m_iNextActiveSlot == NO_ACTIVE_SLOT )
-			bNotActivate = true;
-		result							= Slot(pIItem, bNotActivate); 
+		result = Slot(pIItem, bNotActivate);
 #ifdef DEBUG
-		if(!result) 
+		if (!result)
 			Msg("cant slot in ruck item %s", *pIItem->object().cName());
 #endif
 
 		break;
 	default:
 		bool def_to_slot = true;
-		auto pActor      = smart_cast<CActor*>( m_pOwner );
 		if (Core.Features.test(xrCore::Feature::ruck_flag_preferred))
-			def_to_slot = pActor ? !pIItem->RuckDefault() : true;
+			def_to_slot = smart_cast<CActor*>(m_pOwner) ? !pIItem->RuckDefault() : true;
 
-		if(def_to_slot && CanPutInSlot(pIItem))
+		if (def_to_slot && CanPutInSlot(pIItem))
 		{
-			if ( pActor && Device.dwPrecacheFrame )
-				bNotActivate = true;
-			result						= Slot(pIItem, bNotActivate); VERIFY(result);
-		} 
+			result = Slot(pIItem, bNotActivate); VERIFY(result);
+		}
 		else if (!pIItem->RuckDefault() && CanPutInBelt(pIItem))
 		{
-			result						= Belt(pIItem); VERIFY(result);
+			result = Belt(pIItem); VERIFY(result);
 		}
 		else
 		{
-			result						= Ruck(pIItem); VERIFY(result);
+			result = Ruck(pIItem); VERIFY(result);
 		}
 	}
-	
-	m_pOwner->OnItemTake				(pIItem);
 
-	CalcTotalWeight						();
-	InvalidateState						();
+	m_pOwner->OnItemTake(pIItem);
+
+	CalcTotalWeight();
+	InvalidateState();
 
 	pIItem->object().processing_deactivate();
-	VERIFY								(pIItem->m_eItemPlace != eItemPlaceUndefined);
+	VERIFY(pIItem->m_eItemPlace != eItemPlaceUndefined);
 }
 
 bool CInventory::DropItem(CGameObject *pObj) 
@@ -1079,37 +1072,37 @@ u32 CInventory::BeltSlotsCount() const
 
 void  CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_trade) const
 {
-	for(TIItemContainer::const_iterator it = m_ruck.begin(); m_ruck.end() != it; ++it) 
+	for (TIItemContainer::const_iterator it = m_ruck.begin(); m_ruck.end() != it; ++it)
 	{
 		PIItem pIItem = *it;
-		if(!for_trade || pIItem->CanTrade())
+		if (!for_trade || pIItem->CanTrade())
 			items_container.push_back(pIItem);
 	}
 
-	if(m_bBeltUseful)
+	if (m_bBeltUseful)
 	{
-		for(TIItemContainer::const_iterator it = m_belt.begin(); m_belt.end() != it; ++it) 
+		for (TIItemContainer::const_iterator it = m_belt.begin(); m_belt.end() != it; ++it)
 		{
 			PIItem pIItem = *it;
-			if(!for_trade || pIItem->CanTrade())
+			if (!for_trade || pIItem->CanTrade())
 				items_container.push_back(pIItem);
 		}
 	}
-	
-	if(m_bSlotsUseful)
+
+	if (m_bSlotsUseful)
 	{
-		TISlotArr::const_iterator slot_it			= m_slots.begin();
-		TISlotArr::const_iterator slot_it_e			= m_slots.end();
-		for(;slot_it!=slot_it_e;++slot_it)
+		TISlotArr::const_iterator slot_it = m_slots.begin();
+		TISlotArr::const_iterator slot_it_e = m_slots.end();
+		for (; slot_it != slot_it_e; ++slot_it)
 		{
 			const CInventorySlot& S = *slot_it;
-			if(S.m_pIItem && (!for_trade || S.m_pIItem->CanTrade())  )
+			if (S.m_pIItem && (!for_trade || S.m_pIItem->CanTrade()))
 			{
-				if(!S.m_bPersistent || S.m_pIItem->GetSlot()==GRENADE_SLOT )
+				if (!S.m_bPersistent || S.m_pIItem->GetSlot() == GRENADE_SLOT)
 					items_container.push_back(S.m_pIItem);
 			}
 		}
-	}		
+	}
 }
 
 bool CInventory::isBeautifulForActiveSlot	(CInventoryItem *pIItem)
