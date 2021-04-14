@@ -281,6 +281,8 @@ void CInventoryOwner::renderable_Render		()
 {
 	if (inventory().ActiveItem())
 		inventory().ActiveItem()->renderable_Render();
+	if (inventory().ItemFromSlot(SECOND_WEAPON_SLOT))
+		inventory().ItemFromSlot(SECOND_WEAPON_SLOT)->renderable_Render();
 
 	CAttachmentOwner::renderable_Render();
 }

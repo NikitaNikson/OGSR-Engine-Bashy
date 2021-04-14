@@ -228,6 +228,7 @@ void CWeaponMagazinedWGrenade::OnShot		()
 		PlaySound( sndShotG, get_LastFP2(), true );
 		
 		AddShotEffector		();
+		PlayAnimShoot();
 		
 		//партиклы огня вылета гранаты из подствольника
 		StartFlameParticles2();

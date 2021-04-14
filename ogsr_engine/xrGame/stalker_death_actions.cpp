@@ -92,12 +92,9 @@ void CStalkerActionDead::initialize		()
 	}
 }
 
-void CStalkerActionDead::execute		()
+void CStalkerActionDead::execute()
 {
-	inherited::execute					();
-
-	if (object().getDestroy())
-		return;
+	inherited::execute();
 
 	object().movement().enable_movement(false);
 
@@ -108,20 +105,35 @@ void CStalkerActionDead::execute		()
 
 	SLOTS::iterator						I = object().inventory().m_slots.begin(), B = I;
 	SLOTS::iterator						E = object().inventory().m_slots.end();
-	for ( ; I != E; ++I) {
+	for (; I != E; ++I) {
 		if (!(*I).m_pIItem)
 			continue;
-		
+
 		if ((*I).m_pIItem->object().CLS_ID == CLSID_IITEM_BOLT)
 			continue;
 
-		if ((I - B) == (int)object().inventory().GetActiveSlot()) {
-			(*I).m_pIItem->SetDropManual	(TRUE);
+		if ((*I).m_pIItem->GetSlot() == TORCH_SLOT)
 			continue;
+
+		if ((*I).m_pIItem->GetSlot() == SECOND_WEAPON_SLOT && object().inventory().GetActiveSlot() != SECOND_WEAPON_SLOT)
+			continue;
+
+		if ((I - B) == (int)object().inventory().GetActiveSlot())
+		{
+			CWeapon	*weapon = smart_cast<CWeapon*>(object().inventory().ActiveItem());
+			if (weapon)
+			{
+				if (weapon->strapped_mode())
+					continue;
+				else {
+					(*I).m_pIItem->SetDropManual(TRUE);
+					continue;
+				}
+			}
 		}
 
-		object().inventory().Ruck		((*I).m_pIItem);
+		object().inventory().Ruck((*I).m_pIItem);
 	}
 
-	set_property						(eWorldPropertyDead,true);
+	set_property(eWorldPropertyDead, true);
 }
