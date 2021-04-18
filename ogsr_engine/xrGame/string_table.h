@@ -31,6 +31,8 @@ public:
 
 	static	BOOL				m_bWriteErrorsToLog;
 	static	void				ReparseKeyBindings		();
+	void					ReloadLanguage();
+	STRING_VALUE				ReturnLanguage() { return (translate(pData->m_sLanguage)); }
 	static  shared_str			GetLanguage				();
 private:
 			void				Init					();
