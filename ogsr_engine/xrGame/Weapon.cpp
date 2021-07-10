@@ -1361,6 +1361,10 @@ BOOL CWeapon::CheckForMisfire	()
 		{ //--> Отключаем осечки если у нас бесконечные патроны через консоль
 			return FALSE;
 		}
+		if (iAmmoElapsed == 0)
+		{ //--> Не клиним ствол, если патронов нема (by: i-love-kfc)
+			return FALSE;
+		}
 		FireEnd();
 
 		bMisfire = true;
